@@ -1,63 +1,28 @@
 from fastapi import Body
+from app.models import *
+from app.requests import *
 
-BOOKS = [
-    {'title': 'Title One', 'author': 'Author One', 'category': 'science'},
-    {'title': 'Title Two', 'author': 'Author Two', 'category': 'science'},
-    {'title': 'Title Three', 'author': 'Author Three', 'category': 'history'},
-    {'title': 'Title Four', 'author': 'Author Four', 'category': 'math'},
-    {'title': 'Title Five', 'author': 'Author Five', 'category': 'math'},
-    {'title': 'Title Six', 'author': 'Author Two', 'category': 'math'}
+BOOKS: list[Book] = [
+    Book(id=1, title="It", author="Stephen King", description="Very scary!", rating=4),
+    Book(id=2, title="The Odyssey", author="Homer", description="A true classic", rating=5),
+    Book(id=3, title="The Divine Comedy", author="Virgil", description="Not my favorite, purgatory was rough.", rating=3),
+    Book(id=4, title="Fahrenheit 451", author="Ray Bradbury", description="A chilling narrative reflected in current society.", rating=5),
+    Book(id=5, title="My Antonia", author="Willa Cather", description="One of the most boring books I've ever read.", rating=2),
+    Book(id=6, title="The Old Man and The Sea", author="Ernest Hemingway", description="A man, his son, and a fish. Riveting...", rating=1)
 ]
+
+def find_book_id(book: Book):
+    book.id = 1 if len(BOOKS) == 0 else BOOKS[-1].id + 1
+
+    return book
 
 def register_routes(app):
     @app.get("/books")
     async def read_all_books():
         return BOOKS
 
-    @app.get("/books/{book_title}")
-    async def read_book(book_title: str):
-        for book in BOOKS:
-            if book.get("title").casefold() == book_title.casefold():
-                return book
 
-    @app.get("/books/")
-    async def read_category_by_query(category: str):
-        books_to_return = []
-        for book in BOOKS:
-            if book.get("category").casefold() == category.casefold():
-                books_to_return.append(book)
-        return books_to_return
-
-    @app.get("/books/byauthor/")
-    async def read_books_by_author_path(author: str):
-        books_to_return = []
-        for book in BOOKS:
-            if book.get("author").casefold() == author.casefold():
-                books_to_return.append(book)
-        return books_to_return
-
-    @app.get("/books/{book_author}")
-    async def read_author_category_by_query(book_author: str, category: str):
-        books_to_return = []
-        for book in BOOKS:
-            if book.get("author").casefold() == book_author.casefold() and book.get(
-                    "category").casefold() == category.casefold():
-                books_to_return.append(book)
-        return books_to_return
-
-    @app.post("/books/create_book")
-    async def create_book(new_book=Body()):
-        BOOKS.append(new_book)
-
-    @app.put("/books/update_book")
-    async def update_book(updated_book=Body()):
-        for i in range(len(BOOKS)):
-            if BOOKS[i].get("title").casefold == updated_book.get("title").casefold():
-                BOOKS[i] = updated_book
-
-    @app.delete("/books/delete_book/{book_title}")
-    async def delete_book(book_title: str):
-        for i in range(len(BOOKS)):
-            if BOOKS[i].get("title").casefold() == book_title.casefold():
-                BOOKS.pop(i)
-                break
+    @app.post("/create-book")
+    async def create_book(book_request: BookCreateRequest):
+        new_book = Book(**book_request.model_dump())
+        BOOKS.append(find_book_id(new_book))
