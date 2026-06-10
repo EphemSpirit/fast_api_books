@@ -18,11 +18,29 @@ def find_book_id(book: Book):
 
 def register_routes(app):
     @app.get("/books")
-    async def read_all_books():
+    async def read_all_books() -> list[Book]:
         return BOOKS
 
 
+    @app.get("/books/{book_id}")
+    async def read_book(book_id: int) -> Book | None:
+        for book in BOOKS:
+            if book.id == book_id:
+                return book
+
+
+    @app.get("/books/")
+    async def read_book_by_rating(rating: int) -> list[Book]:
+        books: list[Book] = []
+        for book in BOOKS:
+            if book.rating == rating:
+                books.append(book)
+
+        return books
+
+
     @app.post("/create-book")
-    async def create_book(book_request: BookCreateRequest):
+    async def create_book(book_request: BookCreateRequest) -> None:
         new_book = Book(**book_request.model_dump())
         BOOKS.append(find_book_id(new_book))
+

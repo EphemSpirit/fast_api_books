@@ -1,1 +1,1 @@
-from .book_request import BookCreateRequest
+from .book_requests import BookCreateRequest

@@ -1,11 +1,13 @@
+from typing import Optional
+
 class Book:
-    id: int
+    id: Optional[int] = None
     title: str
     author: str
     description: str
     rating: int
 
-    def __init__(self, id, title, author, description, rating):
+    def __init__(self, title, author, description, rating, id = None):
         self.id = id
         self.title = title
         self.author = author
