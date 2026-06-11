@@ -1,15 +1,11 @@
 from typing import Optional
+from pydantic import BaseModel
 
-class Book:
-    id: Optional[int] = None
+
+class Book(BaseModel):
+    id: Optional[int] = None # required in update request
     title: str
     author: str
     description: str
     rating: int
-
-    def __init__(self, title, author, description, rating, id = None):
-        self.id = id
-        self.title = title
-        self.author = author
-        self.description = description
-        self.rating = rating
+    published_date: int
