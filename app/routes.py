@@ -1,4 +1,4 @@
-from fastapi import Path
+from fastapi import Path, Query
 from app.models import *
 from app.requests import *
 
@@ -30,7 +30,7 @@ def register_routes(app):
 
 
     @app.get("/books/")
-    async def read_book_by_rating(rating: int) -> list[Book]:
+    async def read_book_by_rating(rating: int = Query(gt=0, lt=6)) -> list[Book]:
         books: list[Book] = []
         for book in BOOKS:
             if book.rating == rating:
@@ -39,7 +39,7 @@ def register_routes(app):
         return books
 
     @app.get("/book/publish/")
-    async def read_book_by_publish_date(published_date: int) -> list[Book]:
+    async def read_book_by_publish_date(published_date: int = Query(gt=-1)) -> list[Book]:
         books: list[Book] = []
         for book in BOOKS:
             if book.published_date == published_date:
